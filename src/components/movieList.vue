@@ -25,8 +25,14 @@ export default{
                 const api_peliculas =[response.data];
                 const peliculas =  api_peliculas[0].results;
                 const top_pelis = peliculas.slice(0, 12);
-                this.movies = top_pelis
+                //this.movies = top_pelis
+
+                this.movies = top_pelis.map(movie => ({
+                    ...movie,
+                    liked: false
+                }));
                 this.$emit('movies-updated', this.movies);
+                
                 console.log(this.movies)
             })
             .catch((error) =>{

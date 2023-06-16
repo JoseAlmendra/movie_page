@@ -9,6 +9,7 @@
           <v-card>
             <v-card-title>
               <h1>{{ movie.title }} - {{ movieDetails.tagline }}</h1>
+              
             </v-card-title>
               <v-container>
                 <v-row>
@@ -17,17 +18,23 @@
                   </v-col>
                   <v-col cols="12" sm="8">
                     <v-card-text>
+                      <div class="progress-heart-container">
                         <v-progress-linear
-                          :model-value="(movieDetails.vote_average)*10"
+                          :model-value="(movieDetails.vote_average) * 10"
                           color="light-green-darken-4"
                           height="25"
                           style="border-radius: 10px; margin-bottom: 3%;"
+                          class="custom-progress-bar"
                           striped
                         >
                           <template v-slot="{ value }">
                             <strong style="color: #FFFFFF;">{{ value }}%</strong>
                           </template>
                         </v-progress-linear>
+                        <div class="heart-icon" @click="toggleLike">
+                          <i class="fas fa-heart" :class="{ 'red-heart': this.movie.liked }"></i>
+                        </div>
+                      </div>
                       <p class="text-subtitle-1" style="float: left; margin-right: 50%;">calificacion: {{ movieDetails.vote_average }}</p>
                       <p class="text-subtitle-1" >votos totales: {{ movieDetails.vote_count }}</p>
                       <p class="text-subtitle-1">Fecha de lanzamiento: {{ movie.release_date }}</p>
@@ -56,12 +63,14 @@
   import axios from 'axios'
   export default {
     props: {
-      movie: Object  // Propiedad para recibir los datos de la película seleccionada
+      movie: Object,  // Propiedad para recibir los datos de la película seleccionada
+      required: true
     },
     data() {
       return {
         dialogVisible: false,  // Variable para controlar la visibilidad del modal dialog
-        movieDetails: [] //objeto donde se guarda la informacion consultada en el api
+        movieDetails: [], //objeto donde se guarda la informacion consultada en el api
+        liked: true
       };
     },
     watch: {
@@ -86,7 +95,32 @@
         }catch (error) {
           console.log(error);
         }
+      },
+      toggleLike() {
+        this.movie.liked = !this.movie.liked;
       }
     }
   };
 </script>
+
+<style>
+.custom-progress-bar {
+  width: 100%; /* Ajusta el ancho de la barra de progreso */
+}
+
+.progress-heart-container {
+  display: flex;
+  align-items: center;
+}
+
+.heart-icon {
+  font-size: 40px;
+  margin-left: 40%;
+  margin-bottom: 4%;
+  color: gray;
+}
+
+.red-heart {
+  color: red;
+}
+</style>
