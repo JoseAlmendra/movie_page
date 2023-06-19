@@ -17,6 +17,9 @@
         <v-list-item @click="handleOption('Option 3')">
           <v-list-item-title>popularidad</v-list-item-title>
         </v-list-item>
+        <v-list-item @click="handleOption('Option 4')">
+          <v-list-item-title>favoritos</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
   </template>

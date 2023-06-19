@@ -1,31 +1,36 @@
 <template>
-    <v-app id="inspire">
-      <v-app-bar dark extension-height="100%">
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
-  
-        <v-toolbar-title>
-          <h2>Peliculas</h2>
-        </v-toolbar-title>
-        <movie-sorting @sort-selected="handleSort"></movie-sorting>
-      </v-app-bar>
-      
-      <v-main>
-        <v-container>
-          <v-row>
-            <v-col v-for="movie in movies" :key="movie.id" cols="4" >
-              <h3>{{ movie.title }}</h3>
-              <v-card height="600"  style="background-color: aqua;">
-                <img :src="'https://image.tmdb.org/t/p/original' + movie.poster_path" alt="Movie Poster" @click="openMovieDialog(movie)"/>
-                
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-main>
-      <movie-dialog :movie="selectedMovie" ref="movieDialog" />
-      <movie-list @movies-updated="updateMovies" />
-    </v-app>
-    
+  <v-app id="inspire">
+    <!-- Barra de navegación -->
+    <v-app-bar dark extension-height="100%">
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-toolbar-title>
+        <h2>Peliculas</h2>
+      </v-toolbar-title>
+      <!-- Componente de ordenamiento -->
+      <movie-sorting @sort-selected="handleSort"></movie-sorting>
+    </v-app-bar>
+
+    <!-- Contenido principal -->
+    <v-main>
+      <v-container>
+        <v-row>
+          <!-- Mostrar películas -->
+          <v-col v-for="movie in filteredMovies" :key="movie.id" cols="4">
+            <h3>{{ movie.title }}</h3>
+            <v-card height="600" style="background-color: aqua;">
+              <img :src="'https://image.tmdb.org/t/p/original' + movie.poster_path" alt="Movie Poster" @click="openMovieDialog(movie)" />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+
+    <!-- Componente de diálogo de película -->
+    <movie-dialog :movie="selectedMovie" ref="movieDialog" />
+
+    <!-- Componente de lista de películas -->
+    <movie-list @movies-updated="updateMovies" />
+  </v-app>
 </template>
 
 <script>
@@ -42,31 +47,59 @@ export default {
   data() {
     return {
       movies: [],
-      selectedMovie: null
+      selectedMovie: null,
+      favoriteOptionSelected: false
+    }
+  },
+  computed: {
+    filteredMovies() {
+      // Filtrar las películas según la opción de ordenamiento seleccionada
+      if (this.favoriteOptionSelected) {
+        // Filtrar por favoritos
+        return this.movies.filter(movie => movie.liked);
+      } else {
+        // Mostrar todas las películas
+        return this.movies;
+      }
     }
   },
   methods: {
-    updateMovies(movies) { // Función para manejar el evento y actualizar la propiedad 'movies'
+    updateMovies(movies) {
+      // Función para manejar el evento y actualizar la propiedad 'movies'
       this.movies = movies;
     },
-    handleSort(option){
-      if (option === 'Option 1') { // Ordenar por fecha
-        this.movies.sort((a, b) => {
-          return new Date(b.release_date) - new Date(a.release_date);
-        });
-      } else if (option === 'Option 2') { // Ordenar alfabéticamente por título
-        this.movies.sort((a, b) => { // Realiza la comparación de los títulos de las películas
-        return a.title.localeCompare(b.title);
-        });
-      } else if (option === 'Option 3') { // Ordenar por popularidad
-        this.movies.sort((a, b) => { // Realiza la comparación de las calificaciones de popularidad
-          return b.popularity - a.popularity;
-        });
+    handleSort(option) {
+      // Función para manejar la opción de ordenamiento seleccionada
+      if (option === 'Option 4') {
+        // Si se selecciona "favoritos"
+        this.favoriteOptionSelected = true;
+      } else {
+        // Si se selecciona otra opción de ordenamiento
+        this.favoriteOptionSelected = false;
+
+        // Ordenar las películas según la opción seleccionada
+        if (option === 'Option 1') {
+          // Ordenar por fecha
+          this.movies.sort((a, b) => {
+            return new Date(b.release_date) - new Date(a.release_date);
+          });
+        } else if (option === 'Option 2') {
+          // Ordenar alfabéticamente por título
+          this.movies.sort((a, b) => {
+            return a.title.localeCompare(b.title);
+          });
+        } else if (option === 'Option 3') {
+          // Ordenar por popularidad
+          this.movies.sort((a, b) => {
+            return b.popularity - a.popularity;
+          });
+        }
       }
     },
     openMovieDialog(movie) {
-      this.selectedMovie = movie;  // Establecer la película seleccionada
-      this.$refs.movieDialog.dialogVisible = true;  // Abrir el modal dialog
+      // Abrir el diálogo de la película seleccionada
+      this.selectedMovie = movie;
+      this.$refs.movieDialog.dialogVisible = true;
     }
   }
 }
