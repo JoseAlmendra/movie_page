@@ -1,7 +1,7 @@
 <template>
-  <test-visual></test-visual>
+  <home-page></home-page>
 </template>
 
 <script setup>
-  import testVisual from '@/components/testVisual.vue';
+  import HomePage from '@/components/HomePage.vue';
 </script>
